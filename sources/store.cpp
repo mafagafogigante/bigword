@@ -20,7 +20,7 @@ static std::ostream &operator<<(std::ostream &os, const WordStore &store) {
   os << store.analysis << '\n';
   os << store.words.size() << '\n';
   for (Word word : store.words) {
-    dump_word_to_store(os, word);
+    word.dump(os);
   }
   return os;
 }
@@ -33,7 +33,7 @@ static std::istream &operator>>(std::istream &is, WordStore &store) {
   is >> word_count;
   store.words.reserve(word_count);
   for (size_t i = 0; i < word_count; i++) {
-    store.words.push_back(read_word_from_store(is));
+    store.words.push_back(Word(is));
   }
   return is;
 }

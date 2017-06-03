@@ -65,9 +65,15 @@ bool LetterCount::is_contained(const LetterCount &o, const Analysis *an) const {
   return true;
 }
 
-Word::Word(const std::string &string, const size_t line) {
+Word::Word(const std::string &string, const LineNumber line) {
   word = string;
   line_number = line;
+}
+
+Word::Word(std::istream &is) {
+  is.read(reinterpret_cast<char *>(&line_number), sizeof(LineNumber));
+  word = read_safe_string(is);
+  is.ignore(1);  // Ignore the newline.
 }
 
 bool Word::operator==(const Word &other) const {
@@ -87,7 +93,7 @@ std::string Word::to_string() const {
   return word;
 }
 
-size_t Word::get_line_number() const {
+LineNumber Word::get_line_number() const {
   return line_number;
 }
 
@@ -109,19 +115,12 @@ bool Word::is_contained(Word &a, Word &b, const Analysis *an) {
   return a.get_count().is_contained(b.get_count(), an);
 }
 
+void Word::dump(std::ostream &os) const {
+  os.write(reinterpret_cast<const char *>(&line_number), sizeof(LineNumber));
+  dump_safe_string(os, word);
+}
+
 std::ostream &operator<<(std::ostream &os, const Word &word) {
   os << word.to_string();
   return os;
-}
-
-void dump_word_to_store(std::ostream &os, const Word &word) {
-  os << word.get_line_number() << '\n';
-  dump_safe_string(os, word.to_string());
-}
-
-Word read_word_from_store(std::istream &is) {
-  LineNumber line_number;
-  is >> line_number;
-  std::string string = read_safe_string(is);
-  return Word(string, line_number);
 }

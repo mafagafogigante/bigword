@@ -7,7 +7,7 @@ if [ ! -f $COMPILATION_DATABASE ]; then
   ln -s build/compile_commands.json
 fi
 
-echo Reformatting...
-clang-format -i sources/*
+echo Analyzing...
+clang-tidy sources/*.cpp
 
 echo "Done after $SECONDS seconds."

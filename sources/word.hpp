@@ -39,7 +39,8 @@ class Word {
 
  public:
   // Zero indicates an undefined line.
-  Word(const std::string &string, const size_t line = 0);
+  Word(const std::string &string, const LineNumber line = 0);
+  Word(std::istream &is);
 
   bool operator==(const Word &other) const;
 
@@ -49,19 +50,17 @@ class Word {
 
   std::string to_string() const;
 
-  size_t get_line_number() const;
+  LineNumber get_line_number() const;
 
   static bool is_shorter(const Word &a, const Word &b);
 
   static bool is_shorter_and_smaller(const Word &a, const Word &b);
 
   static bool is_contained(Word &a, Word &b, const Analysis *an);
+
+  void dump(std::ostream &os) const;
 };
 
 std::ostream &operator<<(std::ostream &os, const Word &word);
-
-void dump_word_to_store(std::ostream &os, const Word &word);
-
-Word read_word_from_store(std::istream &is);
 
 #endif

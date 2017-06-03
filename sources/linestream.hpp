@@ -1,5 +1,5 @@
-#ifndef LINESTREAM_H
-#define LINESTREAM_H
+#ifndef LINESTREAM_HPP
+#define LINESTREAM_HPP
 
 #include <fstream>
 #include <streambuf>

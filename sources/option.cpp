@@ -15,6 +15,9 @@ static const std::string option_info_values = "Output the option values.";
 static const std::string option_name_version = "--version";
 static const std::string option_info_version = "Output the program version.";
 
+static const std::string option_name_copyright = "--copyright";
+static const std::string option_info_copyright = "Output the license.";
+
 static const std::string option_name_time = "--time";
 static const std::string option_info_time = "Output computation times.";
 
@@ -35,11 +38,16 @@ std::string OptionInfo::get_info() const {
 OptionList::OptionList() {
   OptionInfo line_number_info(option_name_line_number, option_info_line_number);
   add_option(Option(line_number_info, OptionValue::negative));
-  OptionInfo line_number_version(option_name_version, option_info_version);
-  add_option(Option(line_number_version, OptionValue::negative));
+
+  OptionInfo version_info(option_name_version, option_info_version);
+  add_option(Option(version_info, OptionValue::negative));
+
+  OptionInfo copyright_info(option_name_copyright, option_info_copyright);
+  add_option(Option(copyright_info, OptionValue::negative));
 
   OptionInfo time_info(option_name_time, option_info_time);
   add_option(Option(time_info, OptionValue::negative));
+
   OptionInfo values_info(option_name_values, option_info_values);
   add_option(Option(values_info, OptionValue::negative));
 
@@ -109,12 +117,23 @@ bool OptionList::is_printing_configuration() const {
   return get_value(option_name_values).to_boolean();
 }
 
+bool OptionList::is_printing_copyright() const {
+  return get_value(option_name_copyright).to_boolean();
+}
+
 bool OptionList::is_printing_version() const {
   return get_value(option_name_version).to_boolean();
 }
 
 bool OptionList::needs_query() const {
-  return !(is_printing_configuration() || is_printing_version());
+  if (is_printing_configuration()) {
+    return false;
+  } else if (is_printing_copyright()) {
+    return false;
+  } else if (is_printing_version()) {
+    return false;
+  }
+  return true;
 }
 
 std::string OptionList::get_source_file() const {
