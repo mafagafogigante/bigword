@@ -97,6 +97,7 @@ int unguardedMain(int argc, char *argv[]) {
   }
   if (options.is_printing_configuration()) {
     options.print_configuration();
+    return EXIT_SUCCESS;
   }
   if (options.is_printing_version()) {
     std::cout << "BigWord version " << version << '\n';
