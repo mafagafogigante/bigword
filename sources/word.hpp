@@ -47,7 +47,7 @@ class Word {
 
   LetterCount get_count();
 
-  std::string to_string() const;
+  const std::string &to_string() const;
 
   LineNumber get_line_number() const;
 

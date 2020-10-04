@@ -44,7 +44,8 @@ static WordVector read_input(int argc, char *argv[]) {
   return words;
 }
 
-static WordVector find_matches(const WordStore &store, Word input) {
+static WordVector find_matches(const WordStore &store, Word input,
+                               unsigned allowed_unused) {
   WordVector matches;
   const WordVector &words = store.words;
   const Analysis *analysis = &store.analysis;
@@ -54,11 +55,13 @@ static WordVector find_matches(const WordStore &store, Word input) {
   while (iter != begin) {
     iter--;
     Word word = *iter;
-    if (!matches.empty()) {
-      // Stop if we reached smaller words.
-      if (Word::is_shorter(word, *matches.begin())) {
+    // Stop if we reached smaller words than desired.
+    const auto unused = input.to_string().size() - word.to_string().size();
+    if (unused > allowed_unused) {
+      if (!matches.empty() || allowed_unused == input.to_string().size()) {
         break;
       }
+      allowed_unused++;  // Relax allowed unused until we match some words.
     }
     if (Word::is_contained(word, input, analysis)) {
       matches.push_back(word);
@@ -117,7 +120,9 @@ int unguardedMain(int argc, char *argv[]) {
   }
   for (size_t query = 0; query != words.size(); query++) {
     const TimePoint query_start;
-    const WordVector matches = find_matches(store, words[query]);
+    const auto allowed_unused = options.get_allowed_unused();
+    const WordVector matches =
+        find_matches(store, words[query], allowed_unused);
     write_escape();
     std::cout << "Query" << ' ' << query + 1 << ' ';
     if (matches.empty()) {

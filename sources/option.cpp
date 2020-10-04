@@ -22,6 +22,10 @@ static constexpr auto option_info_line_number = "Output line numbers.";
 static constexpr auto option_name_source = "--source";
 static constexpr auto option_info_source = "Set the source file.";
 
+static constexpr auto option_name_allow_unused = "--allow-unused";
+static constexpr auto option_info_allow_unused =
+    "Set the number of allowed unused characters.";
+
 OptionValue makeNegativeOptionValue() {
   return OptionValue("Negative", 0);
 }
@@ -69,6 +73,8 @@ OptionList::OptionList() {
 
   OptionInfo source_info(option_name_source, option_info_source);
   add_option(Option(source_info, OptionValue(default_source, 0)));
+  OptionInfo allowed_unused(option_name_allow_unused, option_info_allow_unused);
+  add_option(Option(allowed_unused, OptionValue("0", 0)));
 }
 
 void OptionList::add_option(const Option &option) {
@@ -140,6 +146,15 @@ bool OptionList::is_printing_version() const {
 
 bool OptionList::needs_query() const {
   return !(is_printing_configuration() || is_printing_version());
+}
+
+unsigned OptionList::get_allowed_unused() const {
+  std::stringstream stream(get_value(option_name_allow_unused).text);
+  unsigned returnValue;
+  if (!(stream >> returnValue)) {
+    return 0u;
+  }
+  return returnValue;
 }
 
 std::string OptionList::get_source_file() const {

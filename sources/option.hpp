@@ -62,6 +62,7 @@ class OptionList {
   bool is_printing_line_numbers() const;
   bool is_printing_configuration() const;
   bool is_printing_version() const;
+  unsigned get_allowed_unused() const;
   std::string get_source_file() const;
   void print_options() const;
   void print_configuration() const;

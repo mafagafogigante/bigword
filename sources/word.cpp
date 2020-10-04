@@ -82,7 +82,7 @@ LetterCount Word::get_count() {
   return count;
 }
 
-std::string Word::to_string() const {
+const std::string &Word::to_string() const {
   return word;
 }
 
