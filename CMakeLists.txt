@@ -32,6 +32,11 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Release" OR "${CMAKE_BUILD_TYPE}" STREQUAL "M
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
+option(BIGWORD_USE_PARALLEL_STD "Enables the C++ parallel algorithms." OFF)
+if(BIGWORD_USE_PARALLEL_STD)
+  add_definitions(-DBIGWORD_USE_PARALLEL_STD)
+endif()
+
 set(BIGWORD_DEFAULT_SOURCE "source.txt")
 
 configure_file("${PROJECT_SOURCE_DIR}/sources/configuration.hpp.in" "${PROJECT_BINARY_DIR}/sources/configuration.hpp")
@@ -62,9 +67,12 @@ add_executable(
   sources/data.cpp
   sources/word.hpp
   sources/word.cpp
+  sources/parallel.hpp
   sources/main.cpp)
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+if(BIGWORD_USE_PARALLEL_STD
+   AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU"
+   OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
   set(TDD_LIBRARY "tbb")
 endif()
 

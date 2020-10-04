@@ -10,11 +10,12 @@
 
 #include "data.hpp"
 #include "linestream.hpp"
+#include "parallel.hpp"
 #include "rules.hpp"
 
 namespace BigWord {
 void WordStore::compile() {
-  std::sort(std::execution::par_unseq, words.begin(), words.end(),
+  std::sort(ExecutionPolicyParallelUnsequenced, words.begin(), words.end(),
             Word::is_shorter_and_smaller);
   analysis.compile();
 }

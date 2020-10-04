@@ -13,6 +13,14 @@ $ cmake -DCMAKE_BUILD_TYPE=Release ..
 $ cmake --build .
 ```
 
+Enabling the parallel standard library algorithms requires you to set `BIGWORD_USE_PARALLEL_STD` to "On".
+
+```bash
+$ cmake -DBIGWORD_USE_PARALLEL_STD=On -DCMAKE_BUILD_TYPE=Release ..
+```
+
+You can see the values of the build options by issuing `cmake -L ..`.
+
 ## Static analysis and code formatting
 
 From the build tree, run
