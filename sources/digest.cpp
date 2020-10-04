@@ -6,23 +6,21 @@
 #include <openssl/evp.h>
 
 namespace BigWord {
-static const size_t buffer_size = 8192;
+static constexpr size_t buffer_size = 8192;
 
 Digest::Digest(const std::string &filename) {
-  EVP_MD_CTX *md_context;
-  unsigned char buffer[buffer_size];
-  bool digesting = true;
-  md_context = EVP_MD_CTX_create();
-  std::ifstream input(filename);
-  OpenSSL_add_all_digests();
-  EVP_DigestInit_ex(md_context, EVP_sha256(), NULL);
+  std::array<char, buffer_size> buffer{};
+  EVP_MD_CTX *md_context = EVP_MD_CTX_create();
+  std::ifstream input(filename, std::ios::binary);
+  EVP_DigestInit_ex(md_context, EVP_sha256(), nullptr);
+  auto digesting = true;
   while (digesting) {
-    input.read((char *)buffer, buffer_size);
+    input.read(buffer.data(), buffer_size);
     const size_t read_bytes = input.gcount();
-    EVP_DigestUpdate(md_context, buffer, read_bytes);
+    EVP_DigestUpdate(md_context, buffer.data(), read_bytes);
     digesting = read_bytes == buffer_size;
   }
-  EVP_DigestFinal_ex(md_context, digest, &length);
+  EVP_DigestFinal_ex(md_context, digest.data(), &length);
   EVP_MD_CTX_destroy(md_context);
 }
 
@@ -30,8 +28,10 @@ bool Digest::operator==(const Digest &other) const noexcept {
   if (length != other.length) {
     return false;
   }
-  return std::equal(std::begin(digest), std::end(digest),
-                    std::begin(other.digest));
+  const auto *const thisBegin = std::begin(digest);
+  const auto *const thisEnd = std::end(digest);
+  const auto *const otherBegin = std::begin(other.digest);
+  return std::equal(thisBegin, thisEnd, otherBegin);
 }
 
 static void write_base_16(std::ostream &os, const int x) {
@@ -43,13 +43,12 @@ static void write_base_16(std::ostream &os, const int x) {
 }
 
 static int read_base_16(std::istream &is) {
-  char c;
+  char c = 0;
   is >> c;
   if (c >= 'a') {
     return 10 + (c - 'a');
-  } else {
-    return c - '0';
   }
+  return c - '0';
 }
 
 std::ostream &operator<<(std::ostream &os, const Digest &digest) {
@@ -67,7 +66,6 @@ std::istream &operator>>(std::istream &is, Digest &digest) {
   is >> digest.length;
   // Must erase the newline we wrote before.
   is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-  std::fill(digest.digest, digest.digest + Digest::maximum_size, 0);
   for (size_t i = 0; i < digest.length; i++) {
     digest.digest[i] = 16 * read_base_16(is);
     digest.digest[i] += read_base_16(is);

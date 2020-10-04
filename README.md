@@ -7,10 +7,18 @@ An application to efficiently find words in a dictionary from a multiset of lett
 ## Building
 
 ```bash
-$ mkdir bld 
-$ cd bld
-$ cmake ..
-$ make
+$ mkdir build
+$ cd build
+$ cmake -DCMAKE_BUILD_TYPE=Release ..
+$ cmake --build .
+```
+
+## Static analysis and code formatting
+
+From the build tree, run
+
+```bash
+run-clang-tidy -fix -quiet && clang-format -i ../sources/*
 ```
 
 ## Running

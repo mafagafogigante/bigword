@@ -19,27 +19,26 @@ double Duration::to_nanoseconds() const {
   return us.count();
 }
 
-static const double thousand = 1000.0;
-static const double million = thousand * thousand;
-static const double billion = thousand * thousand * thousand;
+static constexpr double thousand = 1000.0;
+static constexpr double million = thousand * thousand;
+static constexpr double billion = thousand * thousand * thousand;
 
-void write_time_with_unit(const uint64_t number, std::string name) {
-  if (number == 1) {
-    std::cout << number << ' ' << name;
-  } else {
-    std::cout << number << ' ' << name << 's';
+void write_time_with_unit(const uint64_t number, const std::string& name) {
+  std::cout << number << ' ' << name;
+  if (number != 1) {
+    std::cout << 's';
   }
 }
 
 void write_time(const double nanoseconds) {
   if (nanoseconds >= billion) {
-    const double seconds = nanoseconds / billion;
+    const auto seconds = nanoseconds / billion;
     write_time_with_unit(std::floor(seconds), "second");
   } else if (nanoseconds >= million) {
-    const double milliseconds = nanoseconds / million;
+    const auto milliseconds = nanoseconds / million;
     write_time_with_unit(std::floor(milliseconds), "millisecond");
   } else if (nanoseconds >= thousand) {
-    const double microseconds = nanoseconds / thousand;
+    const auto microseconds = nanoseconds / thousand;
     write_time_with_unit(std::floor(microseconds), "microsecond");
   } else {
     write_time_with_unit(std::floor(nanoseconds), "nanosecond");

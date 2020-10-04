@@ -7,7 +7,7 @@
 
 # Build tree
 cmake-build-debug/
-build/
+*build/
 
 # Convenience links
 compile_commands.json

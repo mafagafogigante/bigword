@@ -4,7 +4,7 @@
 #include <string>
 
 namespace BigWord {
-bool is_valid_word(const std::string &word) {
+bool is_valid_word(const std::string &word) noexcept {
   if (word.empty()) {
     return false;
   }

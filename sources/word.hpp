@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -17,7 +18,7 @@ std::string get_words_filename();
 class LetterCount {
  private:
   size_t letter_count = 0;
-  uint8_t counters[alphabet_size] = {0};
+  std::array<uint8_t, AlphabetSize> counters{};
 
  public:
   LetterCount();
@@ -34,13 +35,11 @@ class LetterCount {
 class Word {
  private:
   std::string word;
-  // Zero indicates an undefined line.
-  LineNumber line_number;
+  LineNumber line_number;  // Zero indicates an undefined line.
   LetterCount count;
 
  public:
-  // Zero indicates an undefined line.
-  Word(const std::string &string, size_t line = 0);
+  explicit Word(const std::string &string = "", LineNumber line = 0);
 
   bool operator==(const Word &other) const;
 
@@ -50,7 +49,7 @@ class Word {
 
   std::string to_string() const;
 
-  size_t get_line_number() const;
+  LineNumber get_line_number() const;
 
   static bool is_shorter(const Word &a, const Word &b);
 

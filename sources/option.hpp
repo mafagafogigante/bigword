@@ -28,19 +28,16 @@ class OptionInfo {
 };
 
 struct OptionValue {
-  static const OptionValue negative;
-  static const OptionValue positive;
-
   std::string text;
   int64_t integer;
 
-  OptionValue(const std::string &text, const int64_t integer);
+  OptionValue(std::string text, int64_t integer);
 
-  bool operator==(const OptionValue &other) const;
+  bool operator==(const OptionValue &other) const noexcept;
 
-  bool is_boolean() const;
+  [[nodiscard]] bool is_boolean() const;
 
-  bool to_boolean() const;
+  [[nodiscard]] bool to_boolean() const;
 };
 
 struct Option {
@@ -54,7 +51,7 @@ struct Option {
 class OptionList {
  private:
   std::map<std::string, Option> map;
-  void add_option(Option option);
+  void add_option(const Option &option);
   OptionValue get_value(const std::string &string) const;
 
  public:

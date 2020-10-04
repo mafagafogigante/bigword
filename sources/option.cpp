@@ -1,28 +1,34 @@
 #include "option.hpp"
 
 #include <iostream>
+#include <utility>
 #include <vector>
 
 #include "configuration.hpp"
 
 namespace BigWord {
-const OptionValue OptionValue::negative = OptionValue("Negative", 0);
-const OptionValue OptionValue::positive = OptionValue("Positive", 1);
+static constexpr auto option_name_values = "--configuration";
+static constexpr auto option_info_values = "Output the option values.";
 
-static const std::string option_name_values = "--configuration";
-static const std::string option_info_values = "Output the option values.";
+static constexpr auto option_name_version = "--version";
+static constexpr auto option_info_version = "Output the program version.";
 
-static const std::string option_name_version = "--version";
-static const std::string option_info_version = "Output the program version.";
+static constexpr auto option_name_time = "--time";
+static constexpr auto option_info_time = "Output computation times.";
 
-static const std::string option_name_time = "--time";
-static const std::string option_info_time = "Output computation times.";
+static constexpr auto option_name_line_number = "--line-number";
+static constexpr auto option_info_line_number = "Output line numbers.";
 
-static const std::string option_name_line_number = "--line-number";
-static const std::string option_info_line_number = "Output line numbers.";
+static constexpr auto option_name_source = "--source";
+static constexpr auto option_info_source = "Set the source file.";
 
-static const std::string option_name_source = "--source";
-static const std::string option_info_source = "Set the source file.";
+OptionValue makeNegativeOptionValue() {
+  return OptionValue("Negative", 0);
+}
+
+OptionValue makePositiveOptionValue() {
+  return OptionValue("Positive", 1);
+}
 
 std::string OptionInfo::get_name() const {
   return name;
@@ -32,15 +38,16 @@ std::string OptionInfo::get_info() const {
   return info;
 }
 
-OptionValue::OptionValue(const std::string &text, const int64_t integer)
-    : text(text), integer(integer) {}
+OptionValue::OptionValue(std::string text, const int64_t integer)
+    : text(std::move(text)), integer(integer) {}
 
-bool OptionValue::operator==(const OptionValue &other) const {
+bool OptionValue::operator==(const OptionValue &other) const noexcept {
   return text == other.text && integer == other.integer;
 }
 
 bool OptionValue::is_boolean() const {
-  return *this == negative || *this == positive;
+  return *this == makeNegativeOptionValue() ||
+         *this == makePositiveOptionValue();
 }
 
 bool OptionValue::to_boolean() const {
@@ -48,21 +55,23 @@ bool OptionValue::to_boolean() const {
 }
 
 OptionList::OptionList() {
+  const auto negativeOptionValue = makeNegativeOptionValue();
+
   OptionInfo line_number_info(option_name_line_number, option_info_line_number);
-  add_option(Option(line_number_info, OptionValue::negative));
+  add_option(Option(line_number_info, negativeOptionValue));
   OptionInfo line_number_version(option_name_version, option_info_version);
-  add_option(Option(line_number_version, OptionValue::negative));
+  add_option(Option(line_number_version, negativeOptionValue));
 
   OptionInfo time_info(option_name_time, option_info_time);
-  add_option(Option(time_info, OptionValue::negative));
+  add_option(Option(time_info, negativeOptionValue));
   OptionInfo values_info(option_name_values, option_info_values);
-  add_option(Option(values_info, OptionValue::negative));
+  add_option(Option(values_info, negativeOptionValue));
 
   OptionInfo source_info(option_name_source, option_info_source);
   add_option(Option(source_info, OptionValue(default_source, 0)));
 }
 
-void OptionList::add_option(Option option) {
+void OptionList::add_option(const Option &option) {
   map.insert({option.info.get_name(), option});
 }
 
@@ -92,7 +101,7 @@ void OptionList::parse(const std::string &string) {
   try {
     auto &option = map.at(option_name);
     if (option.value.is_boolean()) {
-      option.value = OptionValue::positive;
+      option.value = makePositiveOptionValue();
       return;
     }
     if (arguments.empty()) {
@@ -108,7 +117,7 @@ void OptionList::parse(const std::string &string) {
 OptionValue OptionList::get_value(const std::string &string) const {
   const auto iter = map.find(string);
   if (iter == map.end()) {
-    return OptionValue::negative;
+    return makeNegativeOptionValue();
   }
   return iter->second.value;
 }

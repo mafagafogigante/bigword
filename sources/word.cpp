@@ -22,7 +22,7 @@ std::string get_words_filename() {
   return "words.txt";
 }
 
-LetterCount::LetterCount() {}
+LetterCount::LetterCount() = default;
 
 void LetterCount::initialize(const std::string &word) {
   if (letter_count > 0) {
@@ -51,7 +51,7 @@ bool LetterCount::is_contained(const LetterCount &o, const Analysis *an) const {
     return false;
   }
   size_t remaining = o.letter_count - letter_count;
-  for (size_t i = 0; i < alphabet_size; i++) {
+  for (size_t i = 0; i < AlphabetSize; i++) {
     const size_t x = an == nullptr ? i : an->best_index(i);
     if (counters[x] > o.counters[x]) {
       return false;
@@ -66,7 +66,7 @@ bool LetterCount::is_contained(const LetterCount &o, const Analysis *an) const {
   return true;
 }
 
-Word::Word(const std::string &string, const size_t line)
+Word::Word(const std::string &string, const LineNumber line)
     : word(string), line_number(line) {}
 
 bool Word::operator==(const Word &other) const {
@@ -86,7 +86,7 @@ std::string Word::to_string() const {
   return word;
 }
 
-size_t Word::get_line_number() const {
+LineNumber Word::get_line_number() const {
   return line_number;
 }
 
@@ -97,11 +97,11 @@ bool Word::is_shorter(const Word &a, const Word &b) {
 bool Word::is_shorter_and_smaller(const Word &a, const Word &b) {
   if (Word::is_shorter(a, b)) {
     return true;
-  } else if (Word::is_shorter(b, a)) {
-    return false;
-  } else {
-    return a.word < b.word;
   }
+  if (Word::is_shorter(b, a)) {
+    return false;
+  }
+  return a.word < b.word;
 }
 
 bool Word::is_contained(Word &a, Word &b, const Analysis *an) {
@@ -119,7 +119,7 @@ void dump_word_to_store(std::ostream &os, const Word &word) {
 }
 
 Word read_word_from_store(std::istream &is) {
-  LineNumber line_number;
+  LineNumber line_number = 0;
   is >> line_number;
   std::string string = read_safe_string(is);
   return Word(string, line_number);

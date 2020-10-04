@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <fstream>
 
 #include <openssl/evp.h>
@@ -7,11 +8,11 @@
 namespace BigWord {
 class Digest {
  public:
-  static const size_t maximum_size = EVP_MAX_MD_SIZE;
+  static constexpr size_t MaximumSize = EVP_MAX_MD_SIZE;
 
  private:
   unsigned int length = 0;
-  unsigned char digest[maximum_size] = {0};
+  std::array<unsigned char, MaximumSize> digest{};
 
  public:
   Digest() = default;

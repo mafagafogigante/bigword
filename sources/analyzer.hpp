@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 
 #include "rules.hpp"
@@ -12,17 +13,21 @@ namespace BigWord {
  */
 class Analysis {
  private:
-  // How many words have at least one occurrence of this letter.
+  // How many words have been analyzed.
   uint32_t words = 0;
-  uint32_t word_count[alphabet_size] = {0};
-  size_t best_order[alphabet_size] = {0};
+  // How many words have at least one occurrence of this character.
+  std::array<std::uint32_t, AlphabetSize> word_count{};
+  std::array<std::size_t, AlphabetSize> best_order{};
 
   void find_best_order();
 
  public:
-  void analyze(const std::string word);
+  void analyze(const std::string &word);
   void compile();
-  size_t best_index(const size_t comparison) const;
+  /**
+   * Returns the best index to use for the n-th comparison.
+   */
+  [[nodiscard]] std::size_t best_index(std::size_t comparison) const;
 
   friend std::ostream &operator<<(std::ostream &os, const Analysis &analysis);
   friend std::istream &operator>>(std::istream &is, Analysis &analysis);

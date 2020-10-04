@@ -1,5 +1,6 @@
 #include "store.hpp"
 
+#include <execution>
 #include <future>
 #include <iostream>
 #include <string>
@@ -13,7 +14,8 @@
 
 namespace BigWord {
 void WordStore::compile() {
-  std::sort(words.begin(), words.end(), Word::is_shorter_and_smaller);
+  std::sort(std::execution::par_unseq, words.begin(), words.end(),
+            Word::is_shorter_and_smaller);
   analysis.compile();
 }
 
@@ -22,7 +24,7 @@ static std::ostream &operator<<(std::ostream &os, const WordStore &store) {
   os << store.source_digest << '\n';
   os << store.analysis << '\n';
   os << store.words.size() << '\n';
-  for (Word word : store.words) {
+  for (const Word &word : store.words) {
     dump_word_to_store(os, word);
   }
   return os;
@@ -69,7 +71,7 @@ static WordStore make_word_store(const std::string &filename) {
       continue;
     }
     const LineNumber line_number = line_stream.get_line_number();
-    store.words.push_back(Word(string, line_number));
+    store.words.emplace_back(string, line_number);
     store.analysis.analyze(string);
   }
   store.source_digest = future_digest.get();
@@ -82,12 +84,12 @@ static WordStore make_word_store(const std::string &filename) {
  */
 WordStore load_word_store(const std::string &filename) {
   const std::string store_filename = derive_store_name(filename);
-  std::ifstream ifs;
-  ifs.open(store_filename);
-  if (ifs.is_open()) {
+  std::ifstream input_stream;
+  input_stream.open(store_filename);
+  if (input_stream.is_open()) {
     auto future_digest = std::async(std::launch::async, digest_file, filename);
     WordStore store;
-    ifs >> store;
+    input_stream >> store;
     if (store.source_digest == future_digest.get()) {
       return store;
     }
