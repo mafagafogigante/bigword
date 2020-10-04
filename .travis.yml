@@ -2,10 +2,6 @@
 dist: focal
 language: cpp
 
-compiler:
-  - clang
-  - gcc
-
 addons:
   apt:
     update: true
@@ -24,12 +20,26 @@ jobs:
         - mkdir build && cd build || exit
         - cmake -DCMAKE_BUILD_TYPE=Debug ..
         - cmake --build .
+    - name: "GCC - Debug - Using parallel standard library"
+      language: cpp
+      compiler: gcc
+      script:
+        - mkdir build && cd build || exit
+        - cmake -DBIGWORD_USE_PARALLEL_STD=On -DCMAKE_BUILD_TYPE=Debug ..
+        - cmake --build .
     - name: "Clang - Debug"
       language: cpp
       compiler: clang
       script:
         - mkdir build && cd build || exit
         - cmake -DCMAKE_BUILD_TYPE=Debug ..
+        - cmake --build .
+    - name: "Clang - Debug - Using parallel standard library"
+      language: cpp
+      compiler: clang
+      script:
+        - mkdir build && cd build || exit
+        - cmake -DBIGWORD_USE_PARALLEL_STD=On -DCMAKE_BUILD_TYPE=Debug ..
         - cmake --build .
 
 notifications:
