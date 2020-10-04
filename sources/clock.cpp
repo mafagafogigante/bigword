@@ -6,13 +6,10 @@
 #include <string>
 
 namespace BigWord {
-TimePoint::TimePoint() {
-  now = std::chrono::high_resolution_clock::now();
-}
+TimePoint::TimePoint() : now(std::chrono::high_resolution_clock::now()) {}
 
-Duration::Duration(TimePoint begin, TimePoint end) {
-  duration = end.now - begin.now;
-}
+Duration::Duration(const TimePoint begin, const TimePoint end)
+    : duration(end.now - begin.now) {}
 
 double Duration::to_nanoseconds() const {
   auto us = std::chrono::duration_cast<std::chrono::nanoseconds>(duration);
