@@ -32,10 +32,6 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Release" OR "${CMAKE_BUILD_TYPE}" STREQUAL "M
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ltbb")
-endif()
-
 set(BIGWORD_DEFAULT_SOURCE "source.txt")
 
 configure_file("${PROJECT_SOURCE_DIR}/sources/configuration.hpp.in" "${PROJECT_BINARY_DIR}/sources/configuration.hpp")
@@ -68,10 +64,14 @@ add_executable(
   sources/word.cpp
   sources/main.cpp)
 
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+  set(TDD_LIBRARY "tbb")
+endif()
+
 find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIRS} ${THREADS_INCLUDE_DIRS})
-target_link_libraries(bigword ${OPENSSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(bigword ${TDD_LIBRARY} ${OPENSSL_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 # Copy needed data files.
 add_custom_command(
