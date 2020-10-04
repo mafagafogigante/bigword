@@ -8,6 +8,11 @@ compiler:
 addons:
   apt:
     update: true
+    packages:
+      - build-essential
+      - cmake
+      - libtbb-dev # parallelism library for C++ - development files
+      - libtbb2 # parallelism library for C++ - runtime files
 
 script:
   - mkdir build && cd build || exit
