@@ -1,3 +1,4 @@
+---
 dist: focal
 language: cpp
 
@@ -11,13 +12,25 @@ addons:
     packages:
       - build-essential
       - cmake
-      - libtbb-dev # parallelism library for C++ - development files
-      - libtbb2 # parallelism library for C++ - runtime files
+      - libtbb-dev  # parallelism library for C++ - development files
+      - libtbb2  # parallelism library for C++ - runtime files
 
-script:
-  - mkdir build && cd build || exit
-  - cmake -DCMAKE_BUILD_TYPE=Debug ..
-  - cmake --build .
+jobs:
+  include:
+    - name: "GCC - Debug"
+      language: cpp
+      compiler: gcc
+      script:
+        - mkdir build && cd build || exit
+        - cmake -DCMAKE_BUILD_TYPE=Debug ..
+        - cmake --build .
+    - name: "Clang - Debug"
+      language: cpp
+      compiler: clang
+      script:
+        - mkdir build && cd build || exit
+        - cmake -DCMAKE_BUILD_TYPE=Debug ..
+        - cmake --build .
 
 notifications:
   email:
